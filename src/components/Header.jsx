@@ -5,10 +5,7 @@ export const Header = ({ isDark, onToggleTheme, viewMode, onViewModeChange }) =>
   return (
     <header className="border-b border-base-300 bg-base-100/90 backdrop-blur sticky top-0 z-40 px-4 sm:px-6 h-14 flex items-center justify-between">
       {/* ロゴ & タイトル */}
-      <div className="flex items-center gap-3">
-        <div className="w-7 h-7 rounded-lg bg-base-content/90 text-base-100 flex items-center justify-center font-mono font-bold text-sm">
-          S
-        </div>
+      <div className="flex items-center">
         <span className="font-semibold text-base tracking-tight text-base-content">
           SliceSort
         </span>
