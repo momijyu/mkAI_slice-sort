@@ -336,48 +336,34 @@ export const SortCanvas = ({
           const isSwapping = activeIndicesRef.current.swapping.includes(pos);
           const isHighlight = activeIndicesRef.current.highlight.includes(pos);
 
-          const hStrokeW = Math.max(1, Math.min(3.5, pieceW * 0.25, pieceH * 0.25));
+          const hStrokeW = Math.max(1, Math.min(2.5, pieceW * 0.2, pieceH * 0.2));
 
           if (isSwapping) {
-            // スワップ中: ビビッドなネオンレッド/ピンク
+            // スワップ中: 落ち着いたローズレッド枠
             p.noFill();
-            p.stroke(255, 50, 100, 240);
+            p.stroke(244, 63, 94, 220);
             p.strokeWeight(hStrokeW + 0.5);
             p.rect(dx, dy, pieceW, pieceH);
-            p.fill(255, 50, 100, 45);
-            p.rect(dx, dy, pieceW, pieceH);
           } else if (isComparing) {
-            // 比較中: 発光イエロー/ゴールド
+            // 比較中: 落ち着いたブルー枠
             p.noFill();
-            p.stroke(255, 230, 0, 240);
+            p.stroke(59, 130, 246, 220);
             p.strokeWeight(hStrokeW);
             p.rect(dx, dy, pieceW, pieceH);
-            p.fill(255, 230, 0, 35);
-            p.rect(dx, dy, pieceW, pieceH);
           } else if (isHighlight) {
-            // ピボット/最小値ハイライト: シアン
+            // ピボットハイライト: アンバー枠
             p.noFill();
-            p.stroke(0, 240, 255, 220);
+            p.stroke(234, 179, 8, 200);
             p.strokeWeight(hStrokeW);
             p.rect(dx, dy, pieceW, pieceH);
           }
         }
 
-        // ソート完了時の輝きスキャンアニメーション
+        // ソート完了時の控えめなボーダー
         if (statsRef.current.isDone) {
-          scanLineY = (scanLineY + 6) % (canvasH + 100);
-          if (scanLineY < canvasH + 60) {
-            p.noStroke();
-            p.fill(50, 255, 120, 60);
-            p.rect(0, scanLineY - 30, canvasW, 20);
-            p.fill(255, 255, 255, 120);
-            p.rect(0, scanLineY - 22, canvasW, 4);
-          }
-
-          // 外枠のグリーン完了ボーダー
           p.noFill();
-          p.stroke(46, 213, 115, 200);
-          p.strokeWeight(4);
+          p.stroke(16, 185, 129, 160);
+          p.strokeWeight(2);
           p.rect(0, 0, canvasW, canvasH);
         }
       };
@@ -393,23 +379,8 @@ export const SortCanvas = ({
   }, [imageUrl, canvasHeight, getDimensions, onStatsUpdate, onComplete, calculateProgress]);
 
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-base-content/10 bg-base-300">
-      {/* ラベルまたはウィナー表示（レースモード時） */}
-      {label && (
-        <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
-          <span className="badge badge-lg font-bold shadow-md bg-base-100/80 backdrop-blur-md border border-base-content/20">
-            {label}
-          </span>
-          {winner && (
-            <span className="badge badge-lg badge-success font-black animate-bounce shadow-lg text-white">
-              👑 WINNER!
-            </span>
-          )}
-        </div>
-      )}
-
-      {/* p5.js キャンバスのコンテナ */}
-      <div ref={containerRef} className="w-full flex items-center justify-center min-h-[300px]" />
+    <div className="relative w-full rounded-xl overflow-hidden border border-base-300 bg-base-200">
+      <div ref={containerRef} className="w-full flex items-center justify-center min-h-[260px]" />
     </div>
   );
 };

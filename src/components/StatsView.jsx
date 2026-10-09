@@ -1,13 +1,11 @@
 import React from 'react';
-import { ArrowLeftRight, CheckCircle2, Clock, GitCompare, Gauge } from 'lucide-react';
 
 /**
- * daisyUI の stats コンポーネントを用いたリアルタイム統計表示
+ * ミニマルなリアルタイム統計インジケーター
  */
 export const StatsView = ({ stats, algorithmName, isDone }) => {
   const { comparisons = 0, swaps = 0, elapsedMs = 0, progress = 0 } = stats || {};
 
-  // 経過時間のフォーマット (例: 01.42s)
   const formatTime = (ms) => {
     const totalSeconds = ms / 1000;
     if (totalSeconds < 60) {
@@ -19,84 +17,48 @@ export const StatsView = ({ stats, algorithmName, isDone }) => {
   };
 
   return (
-    <div className="w-full flex flex-col gap-2">
-      {/* 進捗バー */}
-      <div className="flex items-center justify-between text-xs font-semibold px-1 text-base-content/80">
-        <span className="flex items-center gap-1.5">
-          <Gauge className="w-3.5 h-3.5 text-primary" />
-          復元進捗率 (Restoration Progress)
-        </span>
-        <span className="font-mono text-sm font-bold text-primary">{progress}%</span>
+    <div className="flex flex-col gap-2 w-full pt-1">
+      {/* 進捗プログレスバー */}
+      <div className="w-full bg-base-300 h-1.5 rounded-full overflow-hidden">
+        <div
+          className={`h-full transition-all duration-150 rounded-full ${
+            progress === 100 ? 'bg-emerald-500' : 'bg-primary'
+          }`}
+          style={{ width: `${progress}%` }}
+        />
       </div>
-      <progress
-        className={`progress w-full h-2.5 transition-all duration-150 ${
-          progress === 100 ? 'progress-success' : 'progress-primary'
-        }`}
-        value={progress}
-        max="100"
-      />
 
-      {/* stats グリッド */}
-      <div className="stats stats-horizontal shadow-lg bg-base-200/70 border border-base-content/10 w-full overflow-x-auto text-center py-1">
-        {/* 比較回数 */}
-        <div className="stat px-3 py-2">
-          <div className="stat-figure text-info hidden sm:block">
-            <GitCompare className="w-5 h-5 opacity-70" />
+      {/* 統計インライン指標 */}
+      <div className="flex flex-wrap items-center justify-between text-xs text-base-content/70 px-0.5 font-mono">
+        <div className="flex items-center gap-4">
+          <div>
+            <span className="text-base-content/50 font-sans mr-1">進捗:</span>
+            <span className="font-semibold text-base-content">{progress}%</span>
           </div>
-          <div className="stat-title text-xs font-medium">比較回数</div>
-          <div className="stat-value text-base sm:text-lg font-mono text-info font-bold">
-            {comparisons.toLocaleString()}
+          <div>
+            <span className="text-base-content/50 font-sans mr-1">比較:</span>
+            <span className="font-semibold text-base-content">{comparisons.toLocaleString()}</span>
           </div>
-          <div className="stat-desc text-[11px] opacity-70">Comparisons</div>
+          <div>
+            <span className="text-base-content/50 font-sans mr-1">交換:</span>
+            <span className="font-semibold text-base-content">{swaps.toLocaleString()}</span>
+          </div>
+          <div>
+            <span className="text-base-content/50 font-sans mr-1">時間:</span>
+            <span className="font-semibold text-base-content">{formatTime(elapsedMs)}</span>
+          </div>
         </div>
 
-        {/* 交換回数 */}
-        <div className="stat px-3 py-2">
-          <div className="stat-figure text-secondary hidden sm:block">
-            <ArrowLeftRight className="w-5 h-5 opacity-70" />
-          </div>
-          <div className="stat-title text-xs font-medium">交換 / 代入</div>
-          <div className="stat-value text-base sm:text-lg font-mono text-secondary font-bold">
-            {swaps.toLocaleString()}
-          </div>
-          <div className="stat-desc text-[11px] opacity-70">Swaps / Writes</div>
-        </div>
-
-        {/* 経過時間 */}
-        <div className="stat px-3 py-2">
-          <div className="stat-figure text-warning hidden sm:block">
-            <Clock className="w-5 h-5 opacity-70" />
-          </div>
-          <div className="stat-title text-xs font-medium">経過時間</div>
-          <div className="stat-value text-base sm:text-lg font-mono text-warning font-bold">
-            {formatTime(elapsedMs)}
-          </div>
-          <div className="stat-desc text-[11px] opacity-70">Elapsed Time</div>
-        </div>
-
-        {/* 状態 */}
-        <div className="stat px-3 py-2">
-          <div className="stat-figure text-success hidden sm:block">
-            <CheckCircle2 className="w-5 h-5 opacity-70" />
-          </div>
-          <div className="stat-title text-xs font-medium">ステータス</div>
-          <div
-            className={`stat-value text-xs sm:text-sm font-bold flex items-center justify-center gap-1 ${
-              isDone ? 'text-success' : 'text-base-content/70'
-            }`}
-          >
-            {isDone ? (
-              <span className="badge badge-success badge-sm font-semibold text-white">復元完了</span>
-            ) : (
-              <span className="badge badge-ghost badge-sm">ソート中</span>
-            )}
-          </div>
-          <div className="stat-desc text-[11px] opacity-70 truncate max-w-[80px]">
-            {algorithmName || ''}
-          </div>
+        <div>
+          {isDone ? (
+            <span className="text-emerald-500 font-sans font-medium">完了</span>
+          ) : (
+            <span className="text-base-content/40 font-sans">
+              {algorithmName ? `${algorithmName}` : '待機中'}
+            </span>
+          )}
         </div>
       </div>
     </div>
   );
 };
-

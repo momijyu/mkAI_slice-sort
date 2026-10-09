@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SortCanvas } from './SortCanvas';
 import { StatsView } from './StatsView';
-import { Trophy, Zap, AlertCircle } from 'lucide-react';
 
 export const RaceMode = ({
   imageUrl,
@@ -22,7 +21,6 @@ export const RaceMode = ({
   const [statsB, setStatsB] = useState({ comparisons: 0, swaps: 0, elapsedMs: 0, progress: 0, isDone: false });
   const [winner, setWinner] = useState(null); // 'A' | 'B' | null
 
-  // リセットまたはシャッフル時に勝者をクリア
   useEffect(() => {
     setWinner(null);
     setStatsA((prev) => ({ ...prev, isDone: false }));
@@ -31,59 +29,49 @@ export const RaceMode = ({
 
   const handleCompleteA = () => {
     setStatsA((prev) => ({ ...prev, isDone: true }));
-    if (!winner) {
-      setWinner('A');
-    }
-    if (statsB.isDone && onCompleteGlobal) {
-      onCompleteGlobal();
-    }
+    if (!winner) setWinner('A');
+    if (statsB.isDone && onCompleteGlobal) onCompleteGlobal();
   };
 
   const handleCompleteB = () => {
     setStatsB((prev) => ({ ...prev, isDone: true }));
-    if (!winner) {
-      setWinner('B');
-    }
-    if (statsA.isDone && onCompleteGlobal) {
-      onCompleteGlobal();
-    }
+    if (!winner) setWinner('B');
+    if (statsA.isDone && onCompleteGlobal) onCompleteGlobal();
   };
 
   return (
-    <div className="flex flex-col gap-5 w-full">
-      {/* レース勝敗バナー */}
+    <div className="flex flex-col gap-4 w-full">
+      {/* 勝敗インジケーター（完了時のみ控えめに表示） */}
       {winner && (
-        <div className="alert alert-success shadow-xl border border-success/30 flex items-center justify-between text-success-content animate-fade-in">
-          <div className="flex items-center gap-3">
-            <Trophy className="w-8 h-8 text-warning animate-bounce" />
-            <div>
-              <div className="font-extrabold text-base sm:text-lg">
-                👑 勝者:{' '}
-                {winner === 'A' ? `${algorithmA.nameJa} (Player A)` : `${algorithmB.nameJa} (Player B)`}
-                ！
-              </div>
-              <div className="text-xs opacity-90">
-                {winner === 'A'
-                  ? `${algorithmA.name} が ${algorithmB.name} より早く画像を復元しました！`
-                  : `${algorithmB.name} が ${algorithmA.name} より早く画像を復元しました！`}
-              </div>
-            </div>
+        <div className="flex items-center justify-between text-xs py-2 px-3 rounded-lg bg-base-200 border border-base-300">
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-base-content">
+              先着完了: {winner === 'A' ? algorithmA.nameJa : algorithmB.nameJa}
+            </span>
+            <span className="text-base-content/50">
+              ({winner === 'A' ? algorithmA.name : algorithmB.name})
+            </span>
           </div>
-          <div className="badge badge-warning font-mono font-bold text-xs">
-            速度差: {Math.abs((statsA.elapsedMs - statsB.elapsedMs) / 1000).toFixed(2)}s
-          </div>
+          <span className="font-mono text-base-content/70">
+            タイム差: {Math.abs((statsA.elapsedMs - statsB.elapsedMs) / 1000).toFixed(2)}s
+          </span>
         </div>
       )}
 
       {/* 2画面グリッド */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* レーン A */}
-        <div className="flex flex-col gap-3 p-3.5 rounded-2xl bg-base-200/50 border border-primary/20 shadow-md">
-          <div className="flex items-center justify-between px-1">
-            <span className="badge badge-primary font-bold text-xs gap-1">
-              Player A: {algorithmA.nameJa}
-            </span>
-            <span className="font-mono text-xs opacity-75">{algorithmA.timeComplexity}</span>
+        <div className="flex flex-col gap-3 p-3 rounded-xl border border-base-300 bg-base-100">
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-base-content">1. {algorithmA.nameJa}</span>
+              <span className="text-base-content/50 font-mono">({algorithmA.timeComplexity})</span>
+            </div>
+            {winner === 'A' && (
+              <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                先着完了
+              </span>
+            )}
           </div>
 
           <SortCanvas
@@ -101,7 +89,6 @@ export const RaceMode = ({
             onStatsUpdate={setStatsA}
             onComplete={handleCompleteA}
             canvasHeight={360}
-            label={algorithmA.name}
             winner={winner === 'A'}
           />
 
@@ -109,12 +96,17 @@ export const RaceMode = ({
         </div>
 
         {/* レーン B */}
-        <div className="flex flex-col gap-3 p-3.5 rounded-2xl bg-base-200/50 border border-secondary/20 shadow-md">
-          <div className="flex items-center justify-between px-1">
-            <span className="badge badge-secondary font-bold text-xs gap-1">
-              Player B: {algorithmB.nameJa}
-            </span>
-            <span className="font-mono text-xs opacity-75">{algorithmB.timeComplexity}</span>
+        <div className="flex flex-col gap-3 p-3 rounded-xl border border-base-300 bg-base-100">
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-base-content">2. {algorithmB.nameJa}</span>
+              <span className="text-base-content/50 font-mono">({algorithmB.timeComplexity})</span>
+            </div>
+            {winner === 'B' && (
+              <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                先着完了
+              </span>
+            )}
           </div>
 
           <SortCanvas
@@ -132,7 +124,6 @@ export const RaceMode = ({
             onStatsUpdate={setStatsB}
             onComplete={handleCompleteB}
             canvasHeight={360}
-            label={algorithmB.name}
             winner={winner === 'B'}
           />
 

@@ -5,13 +5,14 @@ import { SingleMode } from './components/SingleMode';
 import { RaceMode } from './components/RaceMode';
 import { PRESETS } from './utils/presets';
 import { ALGORITHMS } from './algorithms';
-import { setMuted, getMuted } from './utils/audio';
-import { UploadCloud } from 'lucide-react';
+import { setMuted } from './utils/audio';
 
 export function App() {
-  // テーマ
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('slice_sort_theme') || 'dark';
+  // テーマ (Dark / Light)
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem('slice_sort_theme');
+    if (saved) return saved === 'dark';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
   // 画面モード: 'single' | 'race'
@@ -37,7 +38,6 @@ export function App() {
     if (pattern === 'reversed') {
       return arr.reverse();
     } else if (pattern === 'nearly_sorted') {
-      // 10〜15%程度の要素だけを入れ替えて「ほぼ整列」状態を作る
       const swaps = Math.max(1, Math.floor(total * 0.12));
       for (let s = 0; s < swaps; s++) {
         const i = Math.floor(Math.random() * total);
@@ -46,7 +46,7 @@ export function App() {
       }
       return arr;
     }
-    // デフォルト: Fisher-Yates shuffle
+    // Fisher-Yates shuffle
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [arr[i], arr[j]] = [arr[j], arr[i]];
@@ -54,7 +54,7 @@ export function App() {
     return arr;
   }, []);
 
-  // 共有初期配列（レースモードで左右が完全に同一のシャッフルからスタート）
+  // 共有初期配列
   const [sharedArray, setSharedArray] = useState(() => createPiecesArray(24, 'random'));
 
   // アルゴリズム選択
@@ -75,7 +75,7 @@ export function App() {
   const [imageUrl, setImageUrl] = useState(() => PRESETS[0].generate());
   const [isDraggingFile, setIsDraggingFile] = useState(false);
 
-  // シングルモード用 統計
+  // 統計
   const [stats, setStats] = useState({
     comparisons: 0,
     swaps: 0,
@@ -86,9 +86,10 @@ export function App() {
 
   // テーマ更新
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('slice_sort_theme', theme);
-  }, [theme]);
+    const themeName = isDark ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', themeName);
+    localStorage.setItem('slice_sort_theme', themeName);
+  }, [isDark]);
 
   // スライス設定変更時に配列再生成
   useEffect(() => {
@@ -98,10 +99,12 @@ export function App() {
 
   // サウンドのトグル
   const handleToggleMute = useCallback(() => {
-    const next = !isAudioMuted;
-    setIsAudioMuted(next);
-    setMuted(next);
-  }, [isAudioMuted]);
+    setIsAudioMuted((prev) => {
+      const next = !prev;
+      setMuted(next);
+      return next;
+    });
+  }, []);
 
   // 再生/一時停止
   const handleTogglePlay = useCallback(() => {
@@ -139,14 +142,14 @@ export function App() {
     }
   }, []);
 
-  // カスタム画像アップロード (DataURL)
+  // カスタム画像アップロード
   const handleCustomImage = useCallback((dataUrl) => {
     setCurrentPresetId(null);
     setImageUrl(dataUrl);
     setIsRunning(false);
   }, []);
 
-  // ドラッグ＆ドロップ処理
+  // ドラッグ＆ドロップ
   const handleDragOver = (e) => {
     e.preventDefault();
     setIsDraggingFile(true);
@@ -174,24 +177,22 @@ export function App() {
 
   return (
     <div
-      className="min-h-screen flex flex-col bg-base-300 text-base-content relative transition-colors duration-200"
+      className="min-h-screen flex flex-col bg-base-100 text-base-content antialiased"
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      {/* ファイルドラッグ時のオーバーレイ */}
+      {/* ドラッグオーバー時のシンプルなオーバーレイ */}
       {isDraggingFile && (
-        <div className="fixed inset-0 z-50 bg-base-100/80 backdrop-blur-md flex flex-col items-center justify-center border-4 border-dashed border-primary pointer-events-none animate-pulse">
-          <UploadCloud className="w-16 h-16 text-primary mb-3" />
-          <h2 className="text-2xl font-black text-primary">画像をドロップしてスライス分割！</h2>
-          <p className="text-sm opacity-70">PNG, JPG, WebP などの画像ファイルに対応</p>
+        <div className="fixed inset-0 z-50 bg-base-100/90 backdrop-blur-sm flex flex-col items-center justify-center border-2 border-dashed border-primary pointer-events-none">
+          <p className="text-base font-medium">画像をドロップして読み込み</p>
         </div>
       )}
 
       {/* ヘッダー */}
       <Header
-        currentTheme={theme}
-        onThemeChange={setTheme}
+        isDark={isDark}
+        onToggleTheme={() => setIsDark((prev) => !prev)}
         viewMode={viewMode}
         onViewModeChange={(mode) => {
           setIsRunning(false);
@@ -199,9 +200,8 @@ export function App() {
         }}
       />
 
-      {/* メインコンテンツ */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
-        {/* コントロールパネル */}
+      {/* メイン */}
+      <main className="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6 flex flex-col gap-5">
         <Controls
           isRunning={isRunning}
           onTogglePlay={handleTogglePlay}
@@ -248,7 +248,6 @@ export function App() {
           onToggleMute={handleToggleMute}
         />
 
-        {/* 画面ビュー表示 */}
         {viewMode === 'single' ? (
           <SingleMode
             imageUrl={imageUrl}
@@ -286,15 +285,11 @@ export function App() {
       </main>
 
       {/* フッター */}
-      <footer className="footer footer-center p-4 bg-base-100 text-base-content/60 border-t border-base-content/10 text-xs">
-        <div>
-          <p>
-            Image Slice Sort Algorithm Visualizer Studio • Powered by React, p5.js & Tailwind CSS
-          </p>
-        </div>
+      <footer className="border-t border-base-200 py-4 text-center text-xs text-base-content/40">
+        SliceSort — 画像スライス ソート可視化
       </footer>
     </div>
   );
 }
-export default App;
 
+export default App;
