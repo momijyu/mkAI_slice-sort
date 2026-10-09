@@ -184,7 +184,7 @@ export const SortCanvas = ({
       activeIndicesRef.current = { comparing: [], swapping: [], highlight: [] };
       if (!isDoneEmittedRef.current) {
         isDoneEmittedRef.current = true;
-        if (onCompleteRef.current) onCompleteRef.current();
+        // 注意: 正常完了ではないため onComplete (勝者判定) は呼ばない
         if (onStatsUpdateRef.current) onStatsUpdateRef.current({ ...statsRef.current });
       }
       return;
@@ -243,15 +243,22 @@ export const SortCanvas = ({
 
     const updateCanvasSize = (p) => {
       if (!containerRef.current || !p) return;
-      const w = containerRef.current.clientWidth || 360;
+      const maxW = containerRef.current.clientWidth || 360;
+      const isMobile = window.innerWidth < 640;
+      const maxH = isMobile ? Math.min(320, canvasHeight) : canvasHeight;
+
       if (img && img.width && img.height) {
-        const aspectH = Math.round(w * (img.height / img.width));
-        const isMobile = window.innerWidth < 640;
-        const maxH = isMobile ? Math.min(320, canvasHeight) : canvasHeight;
-        const finalH = Math.min(maxH, aspectH);
-        p.resizeCanvas(w, finalH);
+        const imgRatio = img.width / img.height;
+        let finalW = maxW;
+        let finalH = Math.round(maxW / imgRatio);
+
+        if (finalH > maxH) {
+          finalH = maxH;
+          finalW = Math.round(maxH * imgRatio);
+        }
+        p.resizeCanvas(finalW, finalH);
       } else {
-        p.resizeCanvas(w, Math.min(window.innerWidth < 640 ? 260 : canvasHeight, canvasHeight));
+        p.resizeCanvas(maxW, Math.min(isMobile ? 260 : canvasHeight, canvasHeight));
       }
     };
 
@@ -276,6 +283,7 @@ export const SortCanvas = ({
         renderer.parent(containerRef.current);
         p.pixelDensity(window.devicePixelRatio || 1);
         p.frameRate(60);
+        updateCanvasSize(p);
       };
 
       p.windowResized = () => {
@@ -411,6 +419,7 @@ export const SortCanvas = ({
       }
       instance.remove();
       p5InstanceRef.current = null;
+      img = null;
     };
   }, [imageUrl, canvasHeight]); // imageUrl と canvasHeight 以外での再マウントを完全根絶！
 

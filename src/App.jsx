@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Header } from './components/Header';
 import { Controls } from './components/Controls';
 import { SingleMode } from './components/SingleMode';
@@ -156,19 +156,33 @@ export function App() {
     setIsRunning(false);
   }, []);
 
-  // ドラッグ＆ドロップ
+  // ドラッグ＆ドロップ（チラつき防止カウンター付き）
+  const dragCounterRef = useRef(0);
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    dragCounterRef.current++;
+    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+      setIsDraggingFile(true);
+    }
+  };
+
   const handleDragOver = (e) => {
     e.preventDefault();
-    setIsDraggingFile(true);
   };
 
   const handleDragLeave = (e) => {
     e.preventDefault();
-    setIsDraggingFile(false);
+    dragCounterRef.current--;
+    if (dragCounterRef.current <= 0) {
+      dragCounterRef.current = 0;
+      setIsDraggingFile(false);
+    }
   };
 
   const handleDrop = async (e) => {
     e.preventDefault();
+    dragCounterRef.current = 0;
     setIsDraggingFile(false);
     const file = e.dataTransfer.files?.[0];
     if (file && file.type.startsWith('image/')) {
@@ -182,6 +196,7 @@ export function App() {
   return (
     <div
       className="min-h-screen flex flex-col bg-base-100 text-base-content antialiased"
+      onDragEnter={handleDragEnter}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}

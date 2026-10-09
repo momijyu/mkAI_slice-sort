@@ -99,13 +99,34 @@ export const Controls = ({
               className="dropdown-content menu p-1 shadow-lg bg-base-100 rounded-lg w-44 z-30 border border-base-300 mt-1 text-xs"
             >
               <li>
-                <button onClick={() => onShuffle('random')}>ランダム</button>
+                <button
+                  onClick={() => {
+                    document.activeElement?.blur();
+                    onShuffle('random');
+                  }}
+                >
+                  ランダム
+                </button>
               </li>
               <li>
-                <button onClick={() => onShuffle('reversed')}>逆順 (最悪ケース)</button>
+                <button
+                  onClick={() => {
+                    document.activeElement?.blur();
+                    onShuffle('reversed');
+                  }}
+                >
+                  逆順 (最悪ケース)
+                </button>
               </li>
               <li>
-                <button onClick={() => onShuffle('nearly_sorted')}>ほぼ整列済み</button>
+                <button
+                  onClick={() => {
+                    document.activeElement?.blur();
+                    onShuffle('nearly_sorted');
+                  }}
+                >
+                  ほぼ整列済み
+                </button>
               </li>
             </ul>
           </div>
