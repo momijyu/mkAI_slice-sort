@@ -3,7 +3,7 @@ import { Header } from './components/Header';
 import { Controls } from './components/Controls';
 import { SingleMode } from './components/SingleMode';
 import { RaceMode } from './components/RaceMode';
-import { PRESETS } from './utils/presets';
+import { PRESETS, resizeImageFile } from './utils/presets';
 import { ALGORITHMS } from './algorithms';
 import { setMuted } from './utils/audio';
 
@@ -160,18 +160,15 @@ export function App() {
     setIsDraggingFile(false);
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = async (e) => {
     e.preventDefault();
     setIsDraggingFile(false);
     const file = e.dataTransfer.files?.[0];
     if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          handleCustomImage(event.target.result);
-        }
-      };
-      reader.readAsDataURL(file);
+      const dataUrl = await resizeImageFile(file);
+      if (dataUrl) {
+        handleCustomImage(dataUrl);
+      }
     }
   };
 

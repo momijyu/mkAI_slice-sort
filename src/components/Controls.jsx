@@ -8,7 +8,7 @@ import {
   VolumeX,
   Upload,
 } from 'lucide-react';
-import { PRESETS } from '../utils/presets';
+import { PRESETS, resizeImageFile } from '../utils/presets';
 import { ALGORITHMS } from '../algorithms';
 
 export const Controls = ({
@@ -40,16 +40,13 @@ export const Controls = ({
 }) => {
   const fileInputRef = useRef(null);
 
-  const handleFileUpload = (e) => {
+  const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          onCustomImageUpload(event.target.result);
-        }
-      };
-      reader.readAsDataURL(file);
+      const dataUrl = await resizeImageFile(file);
+      if (dataUrl) {
+        onCustomImageUpload(dataUrl);
+      }
       e.target.value = '';
     }
   };

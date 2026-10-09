@@ -149,3 +149,34 @@ export const PRESETS = [
   { id: 'spectrum', name: 'Spectrum', generate: createSpectrum },
   { id: 'geometric', name: 'Geometric', generate: createGeometric },
 ];
+
+/**
+ * 巨大なスマホ写真等を安全・高速に処理するため、最大1200x900に縮小してDataURL化
+ */
+export function resizeImageFile(file, maxWidth = 1200, maxHeight = 900) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+        if (width > maxWidth || height > maxHeight) {
+          const ratio = Math.min(maxWidth / width, maxHeight / height);
+          width = Math.round(width * ratio);
+          height = Math.round(height * ratio);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', 0.9));
+      };
+      img.onerror = () => resolve(e.target?.result);
+      img.src = e.target?.result;
+    };
+    reader.onerror = () => resolve(null);
+    reader.readAsDataURL(file);
+  });
+}

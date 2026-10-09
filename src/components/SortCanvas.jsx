@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import p5 from 'p5';
-import confetti from 'canvas-confetti';
 import { playSortSound, playCompleteSound } from '../utils/audio';
 
 /**
@@ -21,12 +20,22 @@ export const SortCanvas = ({
   onStatsUpdate, // (stats) => void
   onComplete, // () => void
   canvasHeight = 440,
-  label = '', // ラベル（レースモード用）
   winner = false,
-  accentColor = 'primary', // 'primary' | 'secondary'
 }) => {
   const containerRef = useRef(null);
   const p5InstanceRef = useRef(null);
+
+  // コールバックをRefに保持（不要なuseEffect再実行を完全に防止）
+  const onStatsUpdateRef = useRef(onStatsUpdate);
+  const onCompleteRef = useRef(onComplete);
+
+  useEffect(() => {
+    onStatsUpdateRef.current = onStatsUpdate;
+  }, [onStatsUpdate]);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   // draw() ループ内で最新の値を参照するための Refs
   const isRunningRef = useRef(isRunning);
@@ -96,7 +105,7 @@ export const SortCanvas = ({
       cols = gridColsRef.current;
       rows = gridRowsRef.current;
     }
-    return { cols, rows, total: cols * rows };
+    return { cols, rows, total: Math.max(1, cols * rows) };
   }, []);
 
   // 進捗率の計算（正しい位置にある要素の割合）
@@ -140,8 +149,8 @@ export const SortCanvas = ({
     startTimeRef.current = null;
     isDoneEmittedRef.current = false;
 
-    if (onStatsUpdate) onStatsUpdate({ ...statsRef.current });
-  }, [getDimensions, sharedArray, calculateProgress, onStatsUpdate]);
+    if (onStatsUpdateRef.current) onStatsUpdateRef.current({ ...statsRef.current });
+  }, [getDimensions, sharedArray, calculateProgress]);
 
   // sharedArray または リセット・スライス設定・画像変更の監視
   useEffect(() => {
@@ -155,7 +164,6 @@ export const SortCanvas = ({
   // アルゴリズム変更時にGeneratorを再初期化
   useEffect(() => {
     if (arrayRef.current.length > 0 && algorithmRef.current?.generator) {
-      // 現在の配列状態からソートを開始できるように再生成
       generatorRef.current = algorithmRef.current.generator(arrayRef.current);
       statsRef.current.isDone = false;
       isDoneEmittedRef.current = false;
@@ -166,7 +174,7 @@ export const SortCanvas = ({
   useEffect(() => {
     if (stepTrigger > 0 && generatorRef.current && !statsRef.current.isDone) {
       executeStep();
-      if (onStatsUpdate) onStatsUpdate({ ...statsRef.current });
+      if (onStatsUpdateRef.current) onStatsUpdateRef.current({ ...statsRef.current });
     }
   }, [stepTrigger]);
 
@@ -182,12 +190,8 @@ export const SortCanvas = ({
       if (!isDoneEmittedRef.current) {
         isDoneEmittedRef.current = true;
         playCompleteSound();
-        confetti({
-          particleCount: 50,
-          spread: 60,
-          origin: { y: 0.7 },
-        });
-        if (onComplete) onComplete();
+        if (onCompleteRef.current) onCompleteRef.current();
+        if (onStatsUpdateRef.current) onStatsUpdateRef.current({ ...statsRef.current });
       }
       return;
     }
@@ -224,11 +228,9 @@ export const SortCanvas = ({
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // 既存の要素があればクリア
     containerRef.current.innerHTML = '';
 
     let img = null;
-    let scanLineY = 0; // 完了時スキャンアニメーション用
 
     const updateCanvasSize = (p) => {
       if (!containerRef.current || !p) return;
@@ -294,7 +296,7 @@ export const SortCanvas = ({
           const now = performance.now();
           if (now - lastStatsEmitRef.current > 80) {
             lastStatsEmitRef.current = now;
-            if (onStatsUpdate) onStatsUpdate({ ...statsRef.current });
+            if (onStatsUpdateRef.current) onStatsUpdateRef.current({ ...statsRef.current });
           }
         }
 
@@ -302,8 +304,8 @@ export const SortCanvas = ({
         if (!img || !img.width) {
           p.fill(200);
           p.textAlign(p.CENTER, p.CENTER);
-          p.textSize(16);
-          p.text('Loading Image...', p.width / 2, p.height / 2);
+          p.textSize(14);
+          p.text('読み込み中...', p.width / 2, p.height / 2);
           return;
         }
 
@@ -333,7 +335,7 @@ export const SortCanvas = ({
           // スライス画像の描画
           p.image(img, dx, dy, pieceW, pieceH, sx, sy, srcPieceW, srcPieceH);
 
-          // ピースの境界線（視認性を向上、ピースが小さい場合は控えめに）
+          // ピースの境界線
           if (pieceW >= 4 && pieceH >= 4) {
             p.noFill();
             p.stroke(0, 0, 0, total > 48 ? 35 : 70);
@@ -349,13 +351,13 @@ export const SortCanvas = ({
           const hStrokeW = Math.max(1, Math.min(2.5, pieceW * 0.2, pieceH * 0.2));
 
           if (isSwapping) {
-            // スワップ中: 落ち着いたローズレッド枠
+            // スワップ中: ローズレッド枠
             p.noFill();
             p.stroke(244, 63, 94, 220);
             p.strokeWeight(hStrokeW + 0.5);
             p.rect(dx, dy, pieceW, pieceH);
           } else if (isComparing) {
-            // 比較中: 落ち着いたブルー枠
+            // 比較中: ブルー枠
             p.noFill();
             p.stroke(59, 130, 246, 220);
             p.strokeWeight(hStrokeW);
@@ -397,7 +399,7 @@ export const SortCanvas = ({
       instance.remove();
       p5InstanceRef.current = null;
     };
-  }, [imageUrl, canvasHeight, getDimensions, onStatsUpdate, onComplete, calculateProgress]);
+  }, [imageUrl, canvasHeight]); // imageUrl と canvasHeight 以外での再マウントを完全根絶！
 
   return (
     <div className="relative w-full rounded-xl overflow-hidden border border-base-300 bg-base-200">
