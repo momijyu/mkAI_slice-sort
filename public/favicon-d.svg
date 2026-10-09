@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <rect width="32" height="32" rx="7" fill="#09090b" />
-  <!-- Two sorting bars -->
-  <rect x="7" y="14" width="6" height="12" rx="2" fill="#71717a" />
-  <rect x="19" y="8" width="6" height="18" rx="2" fill="#fafafa" />
-  <!-- Minimalist curved swap arrows above -->
-  <path d="M9 10C9 8 13 6 16 6M16 6L14 4M16 6L14 8" stroke="#fafafa" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-  <path d="M23 10C23 12 19 14 16 14M16 14L18 12M16 14L18 16" stroke="#71717a" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-</svg>
