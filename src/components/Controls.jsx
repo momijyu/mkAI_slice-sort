@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Play,
   Pause,
@@ -7,6 +7,9 @@ import {
   Volume2,
   VolumeX,
   Upload,
+  Unlock,
+  Lock,
+  AlertTriangle,
 } from 'lucide-react';
 import { PRESETS, resizeImageFile } from '../utils/presets';
 import { ALGORITHMS } from '../algorithms';
@@ -39,6 +42,8 @@ export const Controls = ({
   onToggleMute,
 }) => {
   const fileInputRef = useRef(null);
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -279,39 +284,139 @@ export const Controls = ({
           </div>
         )}
 
-        {/* 分割数スライダー */}
+        {/* 分割数設定（通常スライダー / リミット解除時カスタム入力） */}
         <div className="flex flex-col gap-1.5">
-          <div className="flex justify-between text-xs text-base-content/70">
+          <div className="flex justify-between items-center text-xs text-base-content/70">
             <span>解像度 / ピース数:</span>
-            <span className="font-mono text-base-content font-medium">
-              {sliceMode !== 'grid'
-                ? `${sliceCount} 分割`
-                : `${gridCols}×${gridRows} (${gridCols * gridRows} ピース)`}
-            </span>
+            {!isUnlocked ? (
+              <button
+                type="button"
+                onClick={() => setShowConfirmModal(true)}
+                className="text-[11px] text-base-content/50 hover:text-base-content underline flex items-center gap-1 transition-colors"
+                title="分割数の上限を解除して自由に入力"
+              >
+                <Unlock className="w-3 h-3" />
+                <span>リミット解除</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsUnlocked(false);
+                  if (sliceCount > 96) onSliceCountChange(24);
+                  if (gridCols > 16 || gridRows > 16) {
+                    onGridColsChange(6);
+                    onGridRowsChange(6);
+                  }
+                }}
+                className="text-[11px] text-warning hover:underline flex items-center gap-1"
+                title="通常のスライダー制限に戻す"
+              >
+                <Lock className="w-3 h-3" />
+                <span>通常に戻す</span>
+              </button>
+            )}
           </div>
-          {sliceMode !== 'grid' ? (
-            <input
-              type="range"
-              min="3"
-              max="96"
-              step="1"
-              value={sliceCount}
-              onChange={(e) => onSliceCountChange(Number(e.target.value))}
-              className="range range-xs"
-            />
+
+          {!isUnlocked ? (
+            /* 通常時: スライダーと現在値表示 */
+            <>
+              <div className="flex justify-between text-xs">
+                <span className="font-mono text-base-content font-medium">
+                  {sliceMode !== 'grid'
+                    ? `${sliceCount} 分割`
+                    : `${gridCols}×${gridRows} (${gridCols * gridRows} ピース)`}
+                </span>
+              </div>
+              {sliceMode !== 'grid' ? (
+                <input
+                  type="range"
+                  min="3"
+                  max="96"
+                  step="1"
+                  value={sliceCount}
+                  onChange={(e) => onSliceCountChange(Number(e.target.value))}
+                  className="range range-xs"
+                />
+              ) : (
+                <input
+                  type="range"
+                  min="2"
+                  max="16"
+                  value={gridCols}
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    onGridColsChange(val);
+                    onGridRowsChange(val);
+                  }}
+                  className="range range-xs"
+                />
+              )}
+            </>
           ) : (
-            <input
-              type="range"
-              min="2"
-              max="16"
-              value={gridCols}
-              onChange={(e) => {
-                const val = Number(e.target.value);
-                onGridColsChange(val);
-                onGridRowsChange(val);
-              }}
-              className="range range-xs"
-            />
+            /* リミット解除時: 自由な数値直接入力 */
+            <div className="flex flex-col gap-2 p-2 rounded-lg bg-base-200/60 border border-warning/30">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-medium text-warning flex items-center gap-1">
+                  <Unlock className="w-3 h-3" /> 制限解除中
+                </span>
+                <span className="text-[11px] font-mono text-base-content/70">
+                  計 {sliceMode !== 'grid' ? sliceCount : gridCols * gridRows} ピース
+                </span>
+              </div>
+
+              {sliceMode !== 'grid' ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-base-content/70 shrink-0">分割数:</span>
+                  <input
+                    type="number"
+                    min="1"
+                    max="5000"
+                    value={sliceCount}
+                    onChange={(e) => {
+                      const val = Math.max(1, Math.min(5000, Number(e.target.value) || 1));
+                      onSliceCountChange(val);
+                    }}
+                    className="input input-bordered input-xs flex-1 font-mono"
+                    placeholder="分割数を入力"
+                  />
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex items-center gap-1.5 flex-1 min-w-[85px]">
+                    <span className="text-xs text-base-content/70 shrink-0">横 (列):</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max="500"
+                      value={gridCols}
+                      onChange={(e) => {
+                        const val = Math.max(1, Math.min(500, Number(e.target.value) || 1));
+                        onGridColsChange(val);
+                      }}
+                      className="input input-bordered input-xs w-full font-mono"
+                      placeholder="列数"
+                    />
+                  </div>
+                  <span className="text-xs text-base-content/40">×</span>
+                  <div className="flex items-center gap-1.5 flex-1 min-w-[85px]">
+                    <span className="text-xs text-base-content/70 shrink-0">縦 (行):</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max="500"
+                      value={gridRows}
+                      onChange={(e) => {
+                        const val = Math.max(1, Math.min(500, Number(e.target.value) || 1));
+                        onGridRowsChange(val);
+                      }}
+                      className="input input-bordered input-xs w-full font-mono"
+                      placeholder="行数"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>
@@ -394,6 +499,44 @@ export const Controls = ({
           </button>
         </div>
       </div>
+
+      {/* リミット解除の確認ダイアログ */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="bg-base-100 border border-base-300 rounded-2xl p-5 max-w-sm w-full shadow-2xl flex flex-col gap-3">
+            <div className="flex items-center gap-2 text-warning font-semibold text-sm">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <span>本当にリミットを解除しますか？</span>
+            </div>
+            <p className="text-xs text-base-content/70 leading-relaxed">
+              分割数の上限を解除し、任意の数値を直接入力できるようになります。
+              <br />
+              <span className="text-warning/90 mt-1 inline-block">
+                ※極端に大きな数値を指定すると、動作が重くなったり描画が乱れる場合があります。
+              </span>
+            </p>
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowConfirmModal(false)}
+                className="btn btn-sm btn-ghost font-normal"
+              >
+                キャンセル
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsUnlocked(true);
+                  setShowConfirmModal(false);
+                }}
+                className="btn btn-sm btn-warning font-medium"
+              >
+                解除する
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
