@@ -303,12 +303,12 @@ export const ALGORITHMS = [
   {
     id: 'bogo',
     name: 'Bogo Sort',
-    nameJa: 'ボゴソート (ネタ枠)',
+    nameJa: 'ボゴソート',
     generator: bogoSort,
     timeComplexity: 'O((n+1)!)',
     spaceComplexity: 'O(1)',
-    description: '整列されるまで完全ランダムにシャッフルし続ける究極の非効率ソート',
-    badgeColor: 'badge-error',
+    description: '配列が整列されるまでランダムな並び替えと検証を繰り返す確率的ソートアルゴリズム',
+    badgeColor: 'badge-neutral',
   },
 ];
 

@@ -44,7 +44,7 @@
 | **クイックソート** | Quick Sort | $O(n \log n)$ | $O(n^2)$ | $O(\log n)$ | ピボットを基準に分割統治する実用的な高速ソート |
 | **マージソート** | Merge Sort | $O(n \log n)$ | $O(n \log n)$ | $O(n)$ | 安定した分割統治法による整列 |
 | **ヒープソート** | Heap Sort | $O(n \log n)$ | $O(n \log n)$ | $O(1)$ | 二分ヒープ木を構築して最大値を順次取り出す |
-| **ボゴソート** | Bogo Sort | $O((n+1)!)$ | $\infty$ | $O(1)$ | 完全ランダムに並び替え続けるネタ枠 (安全制限: 10,000回) |
+| **ボゴソート** | Bogo Sort | $O((n+1)!)$ | $\infty$ | $O(1)$ | 整列されるまで並び替えと検証を繰り返す確率的ソート (安全停止制限: 10,000回) |
 
 ---
 
@@ -55,7 +55,6 @@
 - **Graphics**: p5.js (インスタンスモード)
 - **Icons**: Lucide React
 - **Audio**: Web Audio API
-- **Effects**: Canvas Confetti
 - **Hosting / Deploy**: Vercel (完全静的・サーバーレス)
 
 ---

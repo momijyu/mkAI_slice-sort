@@ -168,20 +168,6 @@ export const Controls = ({
               </option>
             ))}
           </select>
-          {selectedAlgorithm.id === 'bogo' && (
-            <div className="text-[11px] text-base-content/60 flex items-center justify-between">
-              <span>※計算量が膨大です (最大1万回で停止)</span>
-              <button
-                onClick={() => {
-                  onSliceModeChange('vertical');
-                  onSliceCountChange(5);
-                }}
-                className="underline hover:text-base-content"
-              >
-                5分割に設定
-              </button>
-            </div>
-          )}
         </div>
 
         {/* アルゴリズム B (レースモード時) */}
@@ -204,11 +190,6 @@ export const Controls = ({
                 </option>
               ))}
             </select>
-            {secondAlgorithm?.id === 'bogo' && (
-              <div className="text-[11px] text-base-content/60">
-                ※計算量が膨大です (最大1万回で停止)
-              </div>
-            )}
           </div>
         ) : (
           /* 分割モード (シングル時) */
