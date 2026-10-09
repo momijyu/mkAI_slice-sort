@@ -248,7 +248,6 @@ export const ALGORITHMS = [
     timeComplexity: 'O(n²)',
     spaceComplexity: 'O(1)',
     description: '隣接する要素を比較して大きい方を順次後ろへ送る基本アルゴリズム',
-    badgeColor: 'badge-primary',
   },
   {
     id: 'selection',
@@ -258,7 +257,6 @@ export const ALGORITHMS = [
     timeComplexity: 'O(n²)',
     spaceComplexity: 'O(1)',
     description: '未ソート領域から最小（または最大）値を探索し、先頭と交換する',
-    badgeColor: 'badge-secondary',
   },
   {
     id: 'insertion',
@@ -268,7 +266,6 @@ export const ALGORITHMS = [
     timeComplexity: 'O(n²)',
     spaceComplexity: 'O(1)',
     description: '整列済み部分に新しい要素を適切な位置に順次挿入していく',
-    badgeColor: 'badge-accent',
   },
   {
     id: 'quick',
@@ -278,7 +275,6 @@ export const ALGORITHMS = [
     timeComplexity: 'O(n log n)',
     spaceComplexity: 'O(log n)',
     description: '基準値(ピボット)を選び、大小に分割して高速に再帰ソートする代表格',
-    badgeColor: 'badge-info',
   },
   {
     id: 'merge',
@@ -288,7 +284,6 @@ export const ALGORITHMS = [
     timeComplexity: 'O(n log n)',
     spaceComplexity: 'O(n)',
     description: '配列を分割統治し、整列しながら結合（マージ）する安定ソート',
-    badgeColor: 'badge-success',
   },
   {
     id: 'heap',
@@ -298,7 +293,6 @@ export const ALGORITHMS = [
     timeComplexity: 'O(n log n)',
     spaceComplexity: 'O(1)',
     description: '二分ヒープ木を構築し、根の最大値を順次末尾に取り出すアルゴリズム',
-    badgeColor: 'badge-warning',
   },
   {
     id: 'bogo',
@@ -308,7 +302,6 @@ export const ALGORITHMS = [
     timeComplexity: 'O((n+1)!)',
     spaceComplexity: 'O(1)',
     description: '配列が整列されるまでランダムな並び替えと検証を繰り返す確率的ソートアルゴリズム',
-    badgeColor: 'badge-neutral',
   },
 ];
 

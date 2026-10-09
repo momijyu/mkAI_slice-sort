@@ -20,7 +20,6 @@ export const SortCanvas = ({
   onStatsUpdate, // (stats) => void
   onComplete, // () => void
   canvasHeight = 440,
-  winner = false,
 }) => {
   const containerRef = useRef(null);
   const p5InstanceRef = useRef(null);

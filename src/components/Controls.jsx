@@ -271,9 +271,9 @@ export const Controls = ({
           {sliceMode !== 'grid' ? (
             <input
               type="range"
-              min="4"
+              min="3"
               max="96"
-              step="4"
+              step="1"
               value={sliceCount}
               onChange={(e) => onSliceCountChange(Number(e.target.value))}
               className="range range-xs"

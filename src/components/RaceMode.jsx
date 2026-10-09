@@ -21,22 +21,29 @@ export const RaceMode = ({
   const [statsB, setStatsB] = useState({ comparisons: 0, swaps: 0, elapsedMs: 0, progress: 0, isDone: false });
   const [winner, setWinner] = useState(null); // 'A' | 'B' | null
 
+  // リセット時の全統計クリア
   useEffect(() => {
     setWinner(null);
-    setStatsA((prev) => ({ ...prev, isDone: false }));
-    setStatsB((prev) => ({ ...prev, isDone: false }));
+    const initialStats = { comparisons: 0, swaps: 0, elapsedMs: 0, progress: 0, isDone: false };
+    setStatsA(initialStats);
+    setStatsB(initialStats);
   }, [sharedArray, resetTrigger, sliceMode, sliceCount, gridCols, gridRows]);
+
+  // 両方のアルゴリズムが完了した際に確実に全体の再生状態を停止
+  useEffect(() => {
+    if (statsA.isDone && statsB.isDone && onCompleteGlobal) {
+      onCompleteGlobal();
+    }
+  }, [statsA.isDone, statsB.isDone, onCompleteGlobal]);
 
   const handleCompleteA = () => {
     setStatsA((prev) => ({ ...prev, isDone: true }));
-    if (!winner) setWinner('A');
-    if (statsB.isDone && onCompleteGlobal) onCompleteGlobal();
+    setWinner((prev) => prev || 'A');
   };
 
   const handleCompleteB = () => {
     setStatsB((prev) => ({ ...prev, isDone: true }));
-    if (!winner) setWinner('B');
-    if (statsA.isDone && onCompleteGlobal) onCompleteGlobal();
+    setWinner((prev) => prev || 'B');
   };
 
   return (
@@ -89,7 +96,6 @@ export const RaceMode = ({
             onStatsUpdate={setStatsA}
             onComplete={handleCompleteA}
             canvasHeight={360}
-            winner={winner === 'A'}
           />
 
           <StatsView stats={statsA} algorithmName={algorithmA.nameJa} isDone={statsA.isDone} />
@@ -124,7 +130,6 @@ export const RaceMode = ({
             onStatsUpdate={setStatsB}
             onComplete={handleCompleteB}
             canvasHeight={360}
-            winner={winner === 'B'}
           />
 
           <StatsView stats={statsB} algorithmName={algorithmB.nameJa} isDone={statsB.isDone} />
