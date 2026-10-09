@@ -50,6 +50,7 @@ export const Controls = ({
         }
       };
       reader.readAsDataURL(file);
+      e.target.value = '';
     }
   };
 
@@ -327,7 +328,7 @@ export const Controls = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-2 border-t border-base-200 text-xs">
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
           <span className="text-base-content/60 shrink-0">画像:</span>
-          <div className="flex gap-1 shrink-0">
+          <div className="flex gap-1 shrink-0 items-center">
             {PRESETS.map((p) => (
               <button
                 key={p.id}
@@ -341,6 +342,11 @@ export const Controls = ({
                 {p.name}
               </button>
             ))}
+            {!currentPresetId && (
+              <span className="px-2.5 py-1 rounded text-xs bg-base-200 font-medium text-base-content border border-base-300">
+                アップロード画像
+              </span>
+            )}
           </div>
         </div>
 
@@ -354,10 +360,10 @@ export const Controls = ({
           />
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="btn btn-xs btn-ghost border border-base-300 font-normal gap-1"
+            className="btn btn-xs btn-outline border-base-300 font-normal gap-1 hover:btn-neutral"
           >
             <Upload className="w-3 h-3" />
-            <span>自前画像をアップロード</span>
+            <span>画像をアップロード</span>
           </button>
         </div>
       </div>

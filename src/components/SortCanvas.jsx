@@ -78,6 +78,10 @@ export const SortCanvas = ({
     algorithmRef.current = algorithm;
   }, [algorithm]);
 
+  useEffect(() => {
+    imageUrlRef.current = imageUrl;
+  }, [imageUrl]);
+
   // グリッド次元の計算
   const getDimensions = useCallback(() => {
     let cols = 1;
@@ -139,14 +143,14 @@ export const SortCanvas = ({
     if (onStatsUpdate) onStatsUpdate({ ...statsRef.current });
   }, [getDimensions, sharedArray, calculateProgress, onStatsUpdate]);
 
-  // sharedArray または リセット・スライス設定変更の監視
+  // sharedArray または リセット・スライス設定・画像変更の監視
   useEffect(() => {
     sliceModeRef.current = sliceMode;
     sliceCountRef.current = sliceCount;
     gridColsRef.current = gridCols;
     gridRowsRef.current = gridRows;
     resetOrInitArray();
-  }, [sliceMode, sliceCount, gridCols, gridRows, sharedArray, resetTrigger, resetOrInitArray]);
+  }, [sliceMode, sliceCount, gridCols, gridRows, sharedArray, resetTrigger, imageUrl, resetOrInitArray]);
 
   // アルゴリズム変更時にGeneratorを再初期化
   useEffect(() => {
@@ -242,10 +246,16 @@ export const SortCanvas = ({
 
     const sketch = (p) => {
       p.preload = () => {
-        if (imageUrlRef.current) {
-          img = p.loadImage(imageUrlRef.current, () => {
-            updateCanvasSize(p);
-          });
+        if (imageUrl) {
+          img = p.loadImage(
+            imageUrl,
+            () => {
+              updateCanvasSize(p);
+            },
+            (err) => {
+              console.error('Failed to load image in p5:', err);
+            }
+          );
         }
       };
 
