@@ -4,7 +4,7 @@ import React from 'react';
  * モバイル・PC両対応のリアルタイム統計インジケーター
  */
 export const StatsView = ({ stats, algorithmName, isDone }) => {
-  const { comparisons = 0, swaps = 0, elapsedMs = 0, progress = 0 } = stats || {};
+  const { comparisons = 0, swaps = 0, elapsedMs = 0, progress = 0, isLimitReached = false } = stats || {};
 
   const formatTime = (ms) => {
     const totalSeconds = ms / 1000;
@@ -22,7 +22,7 @@ export const StatsView = ({ stats, algorithmName, isDone }) => {
       <div className="w-full bg-base-300 h-1.5 rounded-full overflow-hidden">
         <div
           className={`h-full transition-all duration-150 rounded-full ${
-            progress === 100 ? 'bg-emerald-500' : 'bg-primary'
+            progress === 100 ? 'bg-emerald-500' : isLimitReached ? 'bg-amber-500' : 'bg-primary'
           }`}
           style={{ width: `${progress}%` }}
         />
@@ -51,7 +51,11 @@ export const StatsView = ({ stats, algorithmName, isDone }) => {
 
         <div className="w-full sm:w-auto text-right sm:text-left text-[11px] sm:text-xs">
           {isDone ? (
-            <span className="text-emerald-500 font-sans font-medium">復元完了</span>
+            isLimitReached ? (
+              <span className="text-amber-500 font-sans font-medium">制限到達 (未完了)</span>
+            ) : (
+              <span className="text-emerald-500 font-sans font-medium">復元完了</span>
+            )
           ) : (
             <span className="text-base-content/40 font-sans">
               {algorithmName || '待機中'}

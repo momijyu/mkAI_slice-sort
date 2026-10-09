@@ -56,6 +56,7 @@ export const SortCanvas = ({
     elapsedMs: 0,
     progress: 0,
     isDone: false,
+    isLimitReached: false,
   });
 
   const activeIndicesRef = useRef({
@@ -140,6 +141,7 @@ export const SortCanvas = ({
       elapsedMs: 0,
       progress: calculateProgress(arr),
       isDone: false,
+      isLimitReached: false,
     };
     activeIndicesRef.current = { comparing: [], swapping: [], highlight: [] };
     generatorRef.current = algorithmRef.current?.generator
@@ -151,23 +153,15 @@ export const SortCanvas = ({
     if (onStatsUpdateRef.current) onStatsUpdateRef.current({ ...statsRef.current });
   }, [getDimensions, sharedArray, calculateProgress]);
 
-  // sharedArray または リセット・スライス設定・画像変更の監視
+  // sharedArray、リセット、スライス設定、アルゴリズム変更、画像変更の監視
   useEffect(() => {
     sliceModeRef.current = sliceMode;
     sliceCountRef.current = sliceCount;
     gridColsRef.current = gridCols;
     gridRowsRef.current = gridRows;
+    algorithmRef.current = algorithm;
     resetOrInitArray();
-  }, [sliceMode, sliceCount, gridCols, gridRows, sharedArray, resetTrigger, imageUrl, resetOrInitArray]);
-
-  // アルゴリズム変更時にGeneratorを再初期化
-  useEffect(() => {
-    if (arrayRef.current.length > 0 && algorithmRef.current?.generator) {
-      generatorRef.current = algorithmRef.current.generator(arrayRef.current);
-      statsRef.current.isDone = false;
-      isDoneEmittedRef.current = false;
-    }
-  }, [algorithm]);
+  }, [sliceMode, sliceCount, gridCols, gridRows, algorithm, sharedArray, resetTrigger, imageUrl, resetOrInitArray]);
 
   // 1ステップコマ送り
   useEffect(() => {
@@ -182,8 +176,23 @@ export const SortCanvas = ({
     if (!generatorRef.current || statsRef.current.isDone) return;
 
     const res = generatorRef.current.next();
+
+    // 安全制限到達（ボゴソート等で制限回数を超えた場合）
+    if (res.value?.type === 'limit_reached') {
+      statsRef.current.isDone = true;
+      statsRef.current.isLimitReached = true;
+      activeIndicesRef.current = { comparing: [], swapping: [], highlight: [] };
+      if (!isDoneEmittedRef.current) {
+        isDoneEmittedRef.current = true;
+        if (onCompleteRef.current) onCompleteRef.current();
+        if (onStatsUpdateRef.current) onStatsUpdateRef.current({ ...statsRef.current });
+      }
+      return;
+    }
+
     if (res.done || res.value?.type === 'done') {
       statsRef.current.isDone = true;
+      statsRef.current.isLimitReached = false;
       statsRef.current.progress = 100;
       activeIndicesRef.current = { comparing: [], swapping: [], highlight: [] };
       if (!isDoneEmittedRef.current) {
@@ -213,6 +222,7 @@ export const SortCanvas = ({
     } else if (type === 'overwrite') {
       statsRef.current.swaps++;
       activeIndicesRef.current.swapping = indices;
+      activeIndicesRef.current.comparing = [];
       if (indices.length > 0) {
         playSortSound(indices[0], arrayRef.current.length, 'swap');
       }
@@ -373,7 +383,11 @@ export const SortCanvas = ({
         // ソート完了時の控えめなボーダー
         if (statsRef.current.isDone) {
           p.noFill();
-          p.stroke(16, 185, 129, 160);
+          if (statsRef.current.isLimitReached) {
+            p.stroke(245, 158, 11, 160); // アンバー枠 (制限到達)
+          } else {
+            p.stroke(16, 185, 129, 160); // エメラルド枠 (完了)
+          }
           p.strokeWeight(2);
           p.rect(0, 0, canvasW, canvasH);
         }

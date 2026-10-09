@@ -82,6 +82,7 @@ export function App() {
     elapsedMs: 0,
     progress: 0,
     isDone: false,
+    isLimitReached: false,
   });
 
   // テーマ更新
@@ -106,10 +107,22 @@ export function App() {
     });
   }, []);
 
+  // リセット実行
+  const handleReset = useCallback(() => {
+    setIsRunning(false);
+    setResetTrigger((prev) => prev + 1);
+  }, []);
+
   // 再生/一時停止
   const handleTogglePlay = useCallback(() => {
+    // ソートが完了している場合、自動でリセットしてから再生を開始
+    if (stats.isDone) {
+      setResetTrigger((prev) => prev + 1);
+      setIsRunning(true);
+      return;
+    }
     setIsRunning((prev) => !prev);
-  }, []);
+  }, [stats.isDone]);
 
   // 1ステップコマ送り
   const handleStep = useCallback(() => {
@@ -125,12 +138,6 @@ export function App() {
     },
     [totalPieces, createPiecesArray]
   );
-
-  // リセット実行
-  const handleReset = useCallback(() => {
-    setIsRunning(false);
-    setResetTrigger((prev) => prev + 1);
-  }, []);
 
   // プリセット画像選択
   const handleSelectPreset = useCallback((presetId) => {

@@ -21,13 +21,13 @@ export const RaceMode = ({
   const [statsB, setStatsB] = useState({ comparisons: 0, swaps: 0, elapsedMs: 0, progress: 0, isDone: false });
   const [winner, setWinner] = useState(null); // 'A' | 'B' | null
 
-  // リセット時の全統計クリア
+  // リセット時の全統計クリア（アルゴリズム変更時も含む）
   useEffect(() => {
     setWinner(null);
-    const initialStats = { comparisons: 0, swaps: 0, elapsedMs: 0, progress: 0, isDone: false };
+    const initialStats = { comparisons: 0, swaps: 0, elapsedMs: 0, progress: 0, isDone: false, isLimitReached: false };
     setStatsA(initialStats);
     setStatsB(initialStats);
-  }, [sharedArray, resetTrigger, sliceMode, sliceCount, gridCols, gridRows]);
+  }, [sharedArray, resetTrigger, sliceMode, sliceCount, gridCols, gridRows, algorithmA, algorithmB]);
 
   // 両方のアルゴリズムが完了した際に確実に全体の再生状態を停止
   useEffect(() => {

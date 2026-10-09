@@ -21,6 +21,13 @@ function getAudioContext() {
 
 export function setMuted(muted) {
   isMuted = muted;
+  if (!muted) {
+    try {
+      getAudioContext();
+    } catch (e) {
+      // browser autoplay policy guard
+    }
+  }
 }
 
 export function getMuted() {
