@@ -160,3 +160,4 @@ Vercelが自動的に Vite プロジェクトを認識します。以下のデ�
 
 本プロジェクトは [MIT License](LICENSE) のもとで公開されています。
 自由に変更・再配布・公開いただけます。
+# mkAI_slice-sort
