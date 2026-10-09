@@ -99,3 +99,4 @@ export const StatsView = ({ stats, algorithmName, isDone }) => {
     </div>
   );
 };
+

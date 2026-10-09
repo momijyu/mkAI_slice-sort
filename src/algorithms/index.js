@@ -311,3 +311,4 @@ export const ALGORITHMS = [
     badgeColor: 'badge-error',
   },
 ];
+

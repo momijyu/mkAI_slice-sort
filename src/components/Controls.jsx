@@ -149,7 +149,7 @@ export const Controls = ({
           <button
             onClick={onToggleMute}
             className={`btn btn-sm btn-circle ${isMuted ? 'btn-ghost border border-base-content/20' : 'btn-accent shadow-md'}`}
-            title={isAudioMuted ? 'サウンドを有効化' : 'ミュート中'}
+            title={isMuted ? 'サウンドを有効化' : 'ミュート中'}
           >
             {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 animate-pulse" />}
           </button>

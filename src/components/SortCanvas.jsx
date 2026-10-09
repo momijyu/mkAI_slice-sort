@@ -220,6 +220,9 @@ export const SortCanvas = ({
   useEffect(() => {
     if (!containerRef.current) return;
 
+    // 既存の要素があればクリア
+    containerRef.current.innerHTML = '';
+
     let img = null;
     let scanLineY = 0; // 完了時スキャンアニメーション用
 
@@ -228,9 +231,9 @@ export const SortCanvas = ({
         if (imageUrlRef.current) {
           img = p.loadImage(imageUrlRef.current, () => {
             if (img && img.width && img.height && containerRef.current) {
-              const w = containerRef.current.clientWidth || 600;
+              const w = Math.max(300, containerRef.current.clientWidth || 600);
               const aspectHeight = Math.round(w * (img.height / img.width));
-              const finalHeight = Math.min(canvasHeight, Math.max(280, aspectHeight));
+              const finalHeight = Math.min(canvasHeight, Math.max(260, aspectHeight));
               p.resizeCanvas(w, finalHeight);
             }
           });
@@ -238,7 +241,7 @@ export const SortCanvas = ({
       };
 
       p.setup = () => {
-        const containerWidth = containerRef.current.clientWidth || 600;
+        const containerWidth = Math.max(300, containerRef.current.clientWidth || 600);
         const renderer = p.createCanvas(containerWidth, canvasHeight);
         renderer.parent(containerRef.current);
         p.pixelDensity(window.devicePixelRatio || 1);
@@ -247,10 +250,10 @@ export const SortCanvas = ({
 
       p.windowResized = () => {
         if (containerRef.current) {
-          const w = containerRef.current.clientWidth || 600;
+          const w = Math.max(300, containerRef.current.clientWidth || 600);
           if (img && img.width && img.height) {
             const aspectHeight = Math.round(w * (img.height / img.width));
-            const finalHeight = Math.min(canvasHeight, Math.max(280, aspectHeight));
+            const finalHeight = Math.min(canvasHeight, Math.max(260, aspectHeight));
             p.resizeCanvas(w, finalHeight);
           } else {
             p.resizeCanvas(w, canvasHeight);
@@ -388,20 +391,6 @@ export const SortCanvas = ({
       p5InstanceRef.current = null;
     };
   }, [imageUrl, canvasHeight, getDimensions, onStatsUpdate, onComplete, calculateProgress]);
-
-  // 画像URL変更時の再ロード
-  useEffect(() => {
-    imageUrlRef.current = imageUrl;
-    if (p5InstanceRef.current) {
-      p5InstanceRef.current.remove();
-      p5InstanceRef.current = null;
-    }
-    // containerRef を再トリガー
-    const timer = setTimeout(() => {
-      resetOrInitArray();
-    }, 20);
-    return () => clearTimeout(timer);
-  }, [imageUrl, resetOrInitArray]);
 
   return (
     <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-base-content/10 bg-base-300">

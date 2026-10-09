@@ -86,3 +86,4 @@ export const Header = ({ currentTheme, onThemeChange, viewMode, onViewModeChange
     </header>
   );
 };
+
