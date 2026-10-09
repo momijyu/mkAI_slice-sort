@@ -2,6 +2,8 @@
 
 バラバラにシャッフルされた画像スライスが、各種ソートアルゴリズムの実行に伴って徐々に元の1枚の画像へ復元されていく様子を直感的かつ美しく鑑賞・比較できる、ブラウザ完結型のインタラクティブWebアプリケーションです。
 
+🌐 **Live Demo**: [https://mk-ai-slice-sort.vercel.app/](https://mk-ai-slice-sort.vercel.app/)
+
 > **🤖 Built with Antigravity**: 本プロジェクトは、Google DeepMind のエージェント型コーディングAI **Antigravity** を活用したペアプログラミングにより制作されました。
 
 ---
