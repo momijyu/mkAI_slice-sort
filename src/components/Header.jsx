@@ -25,7 +25,7 @@ export const Header = ({ isDark, onToggleTheme, viewMode, onViewModeChange }) =>
         <div className="flex p-0.5 rounded-lg bg-base-200 border border-base-300 text-xs">
           <button
             onClick={() => onViewModeChange('single')}
-            className={`px-3 py-1 rounded-md font-medium transition-colors flex items-center gap-1.5 ${
+            className={`px-2.5 sm:px-3 py-1 rounded-md font-medium transition-colors flex items-center gap-1.5 ${
               viewMode === 'single'
                 ? 'bg-base-100 text-base-content shadow-sm'
                 : 'text-base-content/60 hover:text-base-content'
@@ -36,14 +36,14 @@ export const Header = ({ isDark, onToggleTheme, viewMode, onViewModeChange }) =>
           </button>
           <button
             onClick={() => onViewModeChange('race')}
-            className={`px-3 py-1 rounded-md font-medium transition-colors flex items-center gap-1.5 ${
+            className={`px-2.5 sm:px-3 py-1 rounded-md font-medium transition-colors flex items-center gap-1.5 ${
               viewMode === 'race'
                 ? 'bg-base-100 text-base-content shadow-sm'
                 : 'text-base-content/60 hover:text-base-content'
             }`}
           >
             <Columns2 className="w-3.5 h-3.5" />
-            <span>比較 (2画面)</span>
+            <span>比較<span className="hidden sm:inline"> (2画面)</span></span>
           </button>
         </div>
 

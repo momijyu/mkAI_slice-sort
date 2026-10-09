@@ -226,39 +226,39 @@ export const SortCanvas = ({
     let img = null;
     let scanLineY = 0; // 完了時スキャンアニメーション用
 
+    const updateCanvasSize = (p) => {
+      if (!containerRef.current || !p) return;
+      const w = containerRef.current.clientWidth || 360;
+      if (img && img.width && img.height) {
+        const aspectH = Math.round(w * (img.height / img.width));
+        const isMobile = window.innerWidth < 640;
+        const maxH = isMobile ? Math.min(320, canvasHeight) : canvasHeight;
+        const finalH = Math.min(maxH, aspectH);
+        p.resizeCanvas(w, finalH);
+      } else {
+        p.resizeCanvas(w, Math.min(window.innerWidth < 640 ? 260 : canvasHeight, canvasHeight));
+      }
+    };
+
     const sketch = (p) => {
       p.preload = () => {
         if (imageUrlRef.current) {
           img = p.loadImage(imageUrlRef.current, () => {
-            if (img && img.width && img.height && containerRef.current) {
-              const w = Math.max(300, containerRef.current.clientWidth || 600);
-              const aspectHeight = Math.round(w * (img.height / img.width));
-              const finalHeight = Math.min(canvasHeight, Math.max(260, aspectHeight));
-              p.resizeCanvas(w, finalHeight);
-            }
+            updateCanvasSize(p);
           });
         }
       };
 
       p.setup = () => {
-        const containerWidth = Math.max(300, containerRef.current.clientWidth || 600);
-        const renderer = p.createCanvas(containerWidth, canvasHeight);
+        const w = containerRef.current.clientWidth || 360;
+        const renderer = p.createCanvas(w, Math.min(window.innerWidth < 640 ? 260 : canvasHeight, canvasHeight));
         renderer.parent(containerRef.current);
         p.pixelDensity(window.devicePixelRatio || 1);
         p.frameRate(60);
       };
 
       p.windowResized = () => {
-        if (containerRef.current) {
-          const w = Math.max(300, containerRef.current.clientWidth || 600);
-          if (img && img.width && img.height) {
-            const aspectHeight = Math.round(w * (img.height / img.width));
-            const finalHeight = Math.min(canvasHeight, Math.max(260, aspectHeight));
-            p.resizeCanvas(w, finalHeight);
-          } else {
-            p.resizeCanvas(w, canvasHeight);
-          }
-        }
+        updateCanvasSize(p);
       };
 
       p.draw = () => {
@@ -372,7 +372,18 @@ export const SortCanvas = ({
     const instance = new p5(sketch, containerRef.current);
     p5InstanceRef.current = instance;
 
+    let resizeObserver = null;
+    if (typeof ResizeObserver !== 'undefined' && containerRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        updateCanvasSize(instance);
+      });
+      resizeObserver.observe(containerRef.current);
+    }
+
     return () => {
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
       instance.remove();
       p5InstanceRef.current = null;
     };

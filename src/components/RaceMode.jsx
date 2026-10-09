@@ -43,8 +43,8 @@ export const RaceMode = ({
     <div className="flex flex-col gap-4 w-full">
       {/* 勝敗インジケーター（完了時のみ控えめに表示） */}
       {winner && (
-        <div className="flex items-center justify-between text-xs py-2 px-3 rounded-lg bg-base-200 border border-base-300">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs py-2 px-3 rounded-lg bg-base-200 border border-base-300">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <span className="font-medium text-base-content">
               先着完了: {winner === 'A' ? algorithmA.nameJa : algorithmB.nameJa}
             </span>

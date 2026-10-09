@@ -54,17 +54,16 @@ export const Controls = ({
   };
 
   return (
-    <div className="border border-base-300 bg-base-100 rounded-xl p-4 flex flex-col gap-4 text-sm">
+    <div className="border border-base-300 bg-base-100 rounded-xl p-3.5 sm:p-4 flex flex-col gap-3.5 sm:gap-4 text-sm">
       {/* 1. プライマリ操作バー (再生・コマ送り・シャッフル・速度) */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-base-200">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-base-200">
+        {/* ボタン列 */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
           {/* 再生 / 一時停止 */}
           <button
             onClick={onTogglePlay}
-            className={`btn btn-sm font-medium gap-1.5 min-w-[90px] ${
-              isRunning
-                ? 'btn-neutral'
-                : 'btn-primary'
+            className={`btn btn-sm font-medium gap-1.5 flex-1 sm:flex-initial min-w-[85px] ${
+              isRunning ? 'btn-neutral' : 'btn-primary'
             }`}
           >
             {isRunning ? (
@@ -82,7 +81,7 @@ export const Controls = ({
           <button
             onClick={onStep}
             disabled={isRunning}
-            className="btn btn-sm btn-outline border-base-300 font-normal"
+            className="btn btn-sm btn-outline border-base-300 font-normal px-2.5 sm:px-3"
             title="1ステップ進める"
           >
             <StepForward className="w-3.5 h-3.5" />
@@ -93,7 +92,7 @@ export const Controls = ({
           <div className="dropdown dropdown-bottom">
             <button
               tabIndex={0}
-              className="btn btn-sm btn-outline border-base-300 font-normal"
+              className="btn btn-sm btn-outline border-base-300 font-normal px-2.5 sm:px-3"
             >
               シャッフル
             </button>
@@ -116,7 +115,7 @@ export const Controls = ({
           {/* リセット */}
           <button
             onClick={onReset}
-            className="btn btn-sm btn-ghost border border-base-300 text-base-content/70 hover:text-base-content"
+            className="btn btn-sm btn-ghost border border-base-300 text-base-content/70 hover:text-base-content px-2.5"
             title="現在のシャッフル状態にリセット"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -124,16 +123,8 @@ export const Controls = ({
         </div>
 
         {/* 速度スライダー & 音量 */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={onToggleMute}
-            className="btn btn-ghost btn-sm btn-square text-base-content/60 hover:text-base-content"
-            title={isMuted ? 'サウンドを有効化' : 'ミュート'}
-          >
-            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </button>
-
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between sm:justify-end gap-3 pt-1 sm:pt-0">
+          <div className="flex items-center gap-2 flex-1 sm:flex-initial">
             <span className="text-xs text-base-content/60">速度:</span>
             <input
               type="range"
@@ -141,17 +132,25 @@ export const Controls = ({
               max="50"
               value={speed}
               onChange={(e) => onSpeedChange(Number(e.target.value))}
-              className="range range-xs w-20 sm:w-28"
+              className="range range-xs flex-1 sm:w-28"
             />
             <span className="font-mono text-xs w-8 text-right text-base-content/70">
               {speed}x
             </span>
           </div>
+
+          <button
+            onClick={onToggleMute}
+            className="btn btn-ghost btn-sm btn-square text-base-content/60 hover:text-base-content"
+            title={isMuted ? 'サウンドを有効化' : 'ミュート'}
+          >
+            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
         </div>
       </div>
 
       {/* 2. アルゴリズム選択 & 分割設定 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
         {/* アルゴリズム A */}
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-medium text-base-content/70">
@@ -214,7 +213,7 @@ export const Controls = ({
             )}
           </div>
         ) : (
-          /* 分割モード */
+          /* 分割モード (シングル時) */
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-base-content/70">分割モード</label>
             <div className="flex p-0.5 rounded-lg bg-base-200 border border-base-300 text-xs">
@@ -291,13 +290,13 @@ export const Controls = ({
 
       {/* レースモード時の分割モード（レースモードで3列目が必要な場合） */}
       {viewMode === 'race' && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-base-200">
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-base-content/70">分割モード:</span>
-            <div className="flex p-0.5 rounded-lg bg-base-200 border border-base-300 text-xs">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pt-2 border-t border-base-200">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <span className="text-xs text-base-content/70 shrink-0">分割モード:</span>
+            <div className="flex p-0.5 rounded-lg bg-base-200 border border-base-300 text-xs flex-1 sm:flex-initial">
               <button
                 onClick={() => onSliceModeChange('vertical')}
-                className={`px-3 py-0.5 rounded font-medium ${
+                className={`flex-1 sm:flex-initial px-3 py-1 rounded font-medium ${
                   sliceMode === 'vertical' ? 'bg-base-100 text-base-content shadow-sm' : 'text-base-content/60'
                 }`}
               >
@@ -305,7 +304,7 @@ export const Controls = ({
               </button>
               <button
                 onClick={() => onSliceModeChange('horizontal')}
-                className={`px-3 py-0.5 rounded font-medium ${
+                className={`flex-1 sm:flex-initial px-3 py-1 rounded font-medium ${
                   sliceMode === 'horizontal' ? 'bg-base-100 text-base-content shadow-sm' : 'text-base-content/60'
                 }`}
               >
@@ -313,7 +312,7 @@ export const Controls = ({
               </button>
               <button
                 onClick={() => onSliceModeChange('grid')}
-                className={`px-3 py-0.5 rounded font-medium ${
+                className={`flex-1 sm:flex-initial px-3 py-1 rounded font-medium ${
                   sliceMode === 'grid' ? 'bg-base-100 text-base-content shadow-sm' : 'text-base-content/60'
                 }`}
               >
@@ -325,10 +324,10 @@ export const Controls = ({
       )}
 
       {/* 3. 画像選択 & アップロード */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-base-200 text-xs">
-        <div className="flex items-center gap-2">
-          <span className="text-base-content/60">画像:</span>
-          <div className="flex gap-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-2 border-t border-base-200 text-xs">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+          <span className="text-base-content/60 shrink-0">画像:</span>
+          <div className="flex gap-1 shrink-0">
             {PRESETS.map((p) => (
               <button
                 key={p.id}
@@ -345,7 +344,7 @@ export const Controls = ({
           </div>
         </div>
 
-        <div>
+        <div className="self-end sm:self-auto">
           <input
             ref={fileInputRef}
             type="file"
