@@ -10,6 +10,7 @@ import {
   Unlock,
   Lock,
   AlertTriangle,
+  Zap,
 } from 'lucide-react';
 import { PRESETS, resizeImageFile } from '../utils/presets';
 import { ALGORITHMS } from '../algorithms';
@@ -147,25 +148,66 @@ export const Controls = ({
         </div>
 
         {/* 速度スライダー & 音量 */}
-        <div className="flex items-center justify-between sm:justify-end gap-3 pt-1 sm:pt-0">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between sm:justify-end gap-2 sm:gap-3 pt-1 sm:pt-0">
           <div className="flex items-center gap-2 flex-1 sm:flex-initial">
-            <span className="text-xs text-base-content/60">速度:</span>
+            <span className="text-xs text-base-content/60 flex items-center gap-1 shrink-0">
+              {isUnlocked && <Zap className="w-3.5 h-3.5 text-warning shrink-0" />}
+              速度:
+            </span>
             <input
               type="range"
               min="1"
-              max="50"
+              max={isUnlocked ? 2000 : 100}
               value={speed}
               onChange={(e) => onSpeedChange(Number(e.target.value))}
               className="range range-xs flex-1 sm:w-28"
             />
-            <span className="font-mono text-xs w-8 text-right text-base-content/70">
-              {speed}x
-            </span>
+            {!isUnlocked ? (
+              <span className="font-mono text-xs w-9 text-right text-base-content/70 shrink-0">
+                {speed}x
+              </span>
+            ) : (
+              <div className="flex items-center gap-0.5 shrink-0">
+                <input
+                  type="number"
+                  min="1"
+                  max="5000"
+                  value={speed}
+                  onChange={(e) => {
+                    const val = Math.max(1, Math.min(5000, Number(e.target.value) || 1));
+                    onSpeedChange(val);
+                  }}
+                  className="input input-bordered input-xs w-16 font-mono text-right"
+                  title="速度を直接指定"
+                />
+                <span className="text-xs text-base-content/70 font-mono">x</span>
+              </div>
+            )}
           </div>
+
+          {/* リミット解除時のクイック速度ショートカット */}
+          {isUnlocked && (
+            <div className="flex items-center gap-1 self-end sm:self-auto">
+              {[100, 300, 1000, 3000].map((spd) => (
+                <button
+                  key={spd}
+                  type="button"
+                  onClick={() => onSpeedChange(spd)}
+                  className={`px-1.5 py-0.5 rounded text-[10px] font-mono border transition-colors ${
+                    speed === spd
+                      ? 'bg-warning text-warning-content border-warning font-semibold'
+                      : 'bg-base-200 border-base-300 text-base-content/60 hover:text-base-content'
+                  }`}
+                >
+                  {spd === 3000 ? 'MAX' : `${spd}x`}
+                </button>
+              ))}
+            </div>
+          )}
 
           <button
             onClick={onToggleMute}
-            className="btn btn-ghost btn-sm btn-square text-base-content/60 hover:text-base-content"
+            className="btn btn-ghost btn-sm btn-square text-base-content/60 hover:text-base-content self-end sm:self-auto"
             title={isMuted ? 'サウンドを有効化' : 'ミュート'}
           >
             {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
@@ -308,6 +350,7 @@ export const Controls = ({
                     onGridColsChange(6);
                     onGridRowsChange(6);
                   }
+                  if (speed > 100) onSpeedChange(10);
                 }}
                 className="text-[11px] text-warning hover:underline flex items-center gap-1"
                 title="通常のスライダー制限に戻す"

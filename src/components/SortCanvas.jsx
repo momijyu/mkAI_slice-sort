@@ -171,8 +171,8 @@ export const SortCanvas = ({
     }
   }, [stepTrigger]);
 
-  // 1ステップ実行ロジック
-  const executeStep = () => {
+  // 1ステップ実行ロジック (超高速実行時のサウンドスロットル対応)
+  const executeStep = (canPlaySound = true) => {
     if (!generatorRef.current || statsRef.current.isDone) return;
 
     const res = generatorRef.current.next();
@@ -209,21 +209,21 @@ export const SortCanvas = ({
       statsRef.current.comparisons++;
       activeIndicesRef.current.comparing = indices;
       activeIndicesRef.current.swapping = [];
-      if (indices.length > 0) {
+      if (canPlaySound && indices.length > 0) {
         playSortSound(indices[0], arrayRef.current.length, 'compare');
       }
     } else if (type === 'swap') {
       statsRef.current.swaps++;
       activeIndicesRef.current.swapping = indices;
       activeIndicesRef.current.comparing = [];
-      if (indices.length > 0) {
+      if (canPlaySound && indices.length > 0) {
         playSortSound(indices[0], arrayRef.current.length, 'swap');
       }
     } else if (type === 'overwrite') {
       statsRef.current.swaps++;
       activeIndicesRef.current.swapping = indices;
       activeIndicesRef.current.comparing = [];
-      if (indices.length > 0) {
+      if (canPlaySound && indices.length > 0) {
         playSortSound(indices[0], arrayRef.current.length, 'swap');
       }
     } else if (type === 'highlight') {
@@ -296,12 +296,15 @@ export const SortCanvas = ({
         const currentArray = arrayRef.current;
         const { cols, rows, total } = getDimensions();
 
-        // 実行中のステップ処理（speedRefの数だけループ実行）
+        // 実行中のステップ処理（最大5000ステップ/フレームまで対応 & サウンド負荷制御）
         if (isRunningRef.current && !statsRef.current.isDone) {
-          const stepsToRun = Math.max(1, Math.min(200, Math.floor(speedRef.current)));
+          const currentSpd = Math.max(1, Math.floor(speedRef.current));
+          const stepsToRun = Math.min(5000, currentSpd);
+          const soundStride = currentSpd > 30 ? Math.ceil(currentSpd / 30) : 1;
+
           for (let s = 0; s < stepsToRun; s++) {
             if (statsRef.current.isDone) break;
-            executeStep();
+            executeStep(s % soundStride === 0);
           }
 
           // 経過時間計算
