@@ -281,10 +281,7 @@ export function App() {
         )}
       </main>
 
-      {/* フッター */}
-      <footer className="border-t border-base-200 py-4 text-center text-xs text-base-content/40">
-        SliceSort — 画像スライス ソート可視化
-      </footer>
+
     </div>
   );
 }

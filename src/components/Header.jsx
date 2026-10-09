@@ -9,14 +9,9 @@ export const Header = ({ isDark, onToggleTheme, viewMode, onViewModeChange }) =>
         <div className="w-7 h-7 rounded-lg bg-base-content/90 text-base-100 flex items-center justify-center font-mono font-bold text-sm">
           S
         </div>
-        <div className="flex items-baseline gap-2">
-          <span className="font-semibold text-base tracking-tight text-base-content">
-            SliceSort
-          </span>
-          <span className="text-xs text-base-content/50 hidden sm:inline">
-            画像スライス ソート可視化
-          </span>
-        </div>
+        <span className="font-semibold text-base tracking-tight text-base-content">
+          SliceSort
+        </span>
       </div>
 
       {/* コントロール: モード切替 & テーマ切替 */}
