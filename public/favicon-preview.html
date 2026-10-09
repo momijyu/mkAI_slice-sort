@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Favicon Candidates Preview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #09090b;
+      color: #fafafa;
+      padding: 32px 20px;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    p {
+      color: #71717a;
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      width: 100%;
+      max-width: 960px;
+    }
+    .card {
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #f4f4f5;
+    }
+    .card-desc {
+      font-size: 12px;
+      color: #a1a1aa;
+      text-align: center;
+      height: 36px;
+    }
+    .preview-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 12px 0;
+    }
+    .icon-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #27272a;
+      border-radius: 8px;
+      padding: 8px;
+    }
+    .icon-box.light {
+      background: #f4f4f5;
+    }
+    .tab-mockup {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #27272a;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      color: #d4d4d8;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: bold;
+      border-radius: 9999px;
+      background: #3f3f46;
+      color: #e4e4e7;
+    }
+  </style>
+</head>
+<body>
+  <h1>SliceSort ファビコン候補プレビュー</h1>
+  <p>ブラウザのタブやアイコンサイズでの見え方比較</p>
+
+  <div class="grid">
+    <!-- 案 A -->
+    <div class="card">
+      <div class="badge">案 A</div>
+      <div class="card-title">Ascending Bars（階段バー）</div>
+      <div class="card-desc">ソートの王道。4本の縦バーが昇順に整列した透過ミニマルデザイン（端末の白黒に自動追従）。</div>
+      
+      <div class="preview-row">
+        <div class="icon-box light" title="ライト背景">
+          <img src="/favicon-a.svg" width="48" height="48" alt="A" />
+        </div>
+        <div class="icon-box" title="ダーク背景">
+          <img src="/favicon-a.svg" width="48" height="48" alt="A" />
+        </div>
+      </div>
+      
+      <div class="tab-mockup">
+        <img src="/favicon-a.svg" width="16" height="16" alt="A" />
+        <span>SliceSort</span>
+      </div>
+    </div>
+
+    <!-- 案 B -->
+    <div class="card">
+      <div class="badge">案 B (おすすめ)</div>
+      <div class="card-title">Modern App Badge（黒バッジ）</div>
+      <div class="card-desc">どんなタブ背景でもクッキリ視認できる角丸ダークプレートに、グレースケールの昇順バー。</div>
+      
+      <div class="preview-row">
+        <div class="icon-box light" title="ライト背景">
+          <img src="/favicon-b.svg" width="48" height="48" alt="B" />
+        </div>
+        <div class="icon-box" title="ダーク背景">
+          <img src="/favicon-b.svg" width="48" height="48" alt="B" />
+        </div>
+      </div>
+
+      <div class="tab-mockup">
+        <img src="/favicon-b.svg" width="16" height="16" alt="B" />
+        <span>SliceSort</span>
+      </div>
+    </div>
+
+    <!-- 案 C -->
+    <div class="card">
+      <div class="badge">案 C</div>
+      <div class="card-title">Slice Offset（スライス段差）</div>
+      <div class="card-desc">「画像スライス」を象徴。4分割された写真スライスがソート整列へ向かって段違いに並ぶデザイン。</div>
+      
+      <div class="preview-row">
+        <div class="icon-box light" title="ライト背景">
+          <img src="/favicon-c.svg" width="48" height="48" alt="C" />
+        </div>
+        <div class="icon-box" title="ダーク背景">
+          <img src="/favicon-c.svg" width="48" height="48" alt="C" />
+        </div>
+      </div>
+
+      <div class="tab-mockup">
+        <img src="/favicon-c.svg" width="16" height="16" alt="C" />
+        <span>SliceSort</span>
+      </div>
+    </div>
+
+    <!-- 案 D -->
+    <div class="card">
+      <div class="badge">案 D</div>
+      <div class="card-title">Swap & Bars（入れ替え・ソート）</div>
+      <div class="card-desc">ソートの核心動作「スワップ（交換）」の矢印ループと2本の整列バーを組み合わせたシンボル。</div>
+      
+      <div class="preview-row">
+        <div class="icon-box light" title="ライト背景">
+          <img src="/favicon-d.svg" width="48" height="48" alt="D" />
+        </div>
+        <div class="icon-box" title="ダーク背景">
+          <img src="/favicon-d.svg" width="48" height="48" alt="D" />
+        </div>
+      </div>
+
+      <div class="tab-mockup">
+        <img src="/favicon-d.svg" width="16" height="16" alt="D" />
+        <span>SliceSort</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
